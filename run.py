@@ -13,7 +13,7 @@ from utils.hdfs_io import HADOOP_BIN, hexists, hmkdir, hcopy
 
 ############ Set it correctly for distributed training across nodes
 NNODES = 1  # e.g. 1/2/3/4
-NPROC_PER_NODE = 8  # e.g. 8 gpus
+NPROC_PER_NODE = 1  # e.g. 1 gpus
 
 MASTER_ADDR = 'SET_IT'
 MASTER_PORT = 12345
@@ -228,7 +228,7 @@ def run_coco_captioning(args, load_capt_pretrain=False, scst=False):
     print("### Training COCO Captioning", flush=True)
 
     if not os.path.exists(args.config):
-        args.config = f'./configs/{args.model}/Captioning.yaml'
+        args.config = f'./configs/Captioning.yaml'
 
     if scst:
         load_capt_pretrain = True  # same way to load ckpt;
@@ -236,7 +236,7 @@ def run_coco_captioning(args, load_capt_pretrain=False, scst=False):
     os.system(f"{dist_launch} "
               f"--use_env {'Captioning_scst.py' if scst else 'Captioning.py'} --config {args.config} "
               f"{f'--output_hdfs {args.output_hdfs}' if len(args.output_hdfs) else ''} --output_dir {args.output_dir} "
-              f"--bs {args.bs} --seed {args.seed} --checkpoint {args.checkpoint} "
+              f"--bs {args.bs} --checkpoint {args.checkpoint} "
               f"{'--scst' if scst else ''}  {'--load_capt_pretrain' if load_capt_pretrain else ''} {'--evaluate' if args.evaluate else ''}")
 
 

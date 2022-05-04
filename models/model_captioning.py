@@ -16,7 +16,7 @@ class XVLM(XVLMBase):  # for domain pretrain
                          use_contrastive_loss=False, use_matching_loss=False, use_mlm_loss=False, use_bbox_loss=False, config_text=None)
 
         assert config['text_encoder'] == 'data/bert-base-uncased'
-        self.tokenizer = BertTokenizer.from_pretrained('data/bert-base-uncased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.tokenizer.add_special_tokens({'bos_token': self.tokenizer.cls_token, 'eos_token': self.tokenizer.sep_token})
 
         self.prompt = config['prompt']
