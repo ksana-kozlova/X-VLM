@@ -240,6 +240,26 @@ def run_coco_captioning(args, load_capt_pretrain=False, scst=False):
               f"{'--scst' if scst else ''}  {'--load_capt_pretrain' if load_capt_pretrain else ''} {'--evaluate' if args.evaluate else ''}")
 
 
+def run_flickr8k_captioning(args, load_capt_pretrain=True, scst=False):
+    dist_launch = get_dist_launch(args)
+
+    assert os.path.exists("images/flickr8k-images")
+
+    print("### Training Flickr8k Captioning", flush=True)
+
+    if not os.path.exists(args.config):
+        args.config = f'./configs/Captioning_flickr8k.yaml'
+
+    if scst:
+        load_capt_pretrain = True  # same way to load ckpt;
+
+    os.system(f"{dist_launch} "
+              f"--use_env {'Captioning_scst.py' if scst else 'Captioning_flickr8k.py'} --config {args.config} "
+              f"{f'--output_hdfs {args.output_hdfs}' if len(args.output_hdfs) else ''} --output_dir {args.output_dir} "
+              f"--bs {args.bs} --checkpoint {args.checkpoint} "
+              f"{'--scst' if scst else ''}  {'--load_capt_pretrain' if load_capt_pretrain else ''} {'--evaluate' if args.evaluate else ''}")
+
+
 def run(args):
     if args.task not in ['pretrain_4m_base']:
         assert hexists(args.checkpoint) or hexists(args.load_ckpt_from)
@@ -298,6 +318,9 @@ def run(args):
 
     elif args.task == 'coco_captioning':
         run_coco_captioning(args, load_capt_pretrain=True)
+    
+    elif args.task == 'flickr8k_captioning':
+        run_flickr8k_captioning(args, load_capt_pretrain=True)
 
     elif args.task == 'coco_captioning_scst':  # load checkpoint of 'coco_captioning' results
         args.config = f'./configs/{args.model}/Captioning_scst.yaml'
