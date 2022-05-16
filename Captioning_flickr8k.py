@@ -110,7 +110,7 @@ def main(args, config):
     max_epoch = config['schedular']['epochs']
 
     print("Creating captioning dataset")
-    train_dataset, val_dataset, test_dataset = create_dataset('caption_flickr8k', config)
+    train_dataset, val_dataset, test_dataset = create_dataset('caption_coco', config)
     datasets = [train_dataset, val_dataset, test_dataset]
 
     train_dataset_size = len(train_dataset)

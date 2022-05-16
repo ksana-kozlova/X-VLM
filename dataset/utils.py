@@ -50,8 +50,8 @@ def pre_caption(caption, max_words):
     if len(caption_words) > max_words:
         caption = ' '.join(caption_words[:max_words])
 
-    if not len(caption):
-        raise ValueError("pre_caption yields invalid text")
+    #if not len(caption):
+    #    raise ValueError("pre_caption yields invalid text")
 
     return caption
 
