@@ -13,6 +13,8 @@ from utils.hdfs_io import hexists, hcopy, hopen
 from vqaTools.vqaEval import VQAEval
 from refTools.evaluation.refEvaluation import RefEvaluation
 
+from nltk.translate.bleu_score import corpus_bleu
+
 
 def pre_question(question, max_ques_words):
     question = re.sub(
@@ -133,6 +135,8 @@ def collect_result(result, filename, local_wdir, hdfs_wdir, write_to_hdfs=False,
             if write_to_hdfs:
                 hcopy(final_result_file, os.path.join(hdfs_wdir, '%s.json' % filename))
                 print('result file saved to %s' % os.path.join(hdfs_wdir, '%s.json' % filename))
+
+    print("BLEU score: ", bleu_scorer("data/finetune/flickr8k_test.json", os.path.join(hdfs_wdir, '%s.json' % filename)))
 
     dist.barrier()
 
@@ -264,6 +268,33 @@ def computeIoU(box1, box2):
         inter = 0
     union = box1[2] * box1[3] + box2[2] * box2[3] - inter
     return float(inter) / union
+
+
+def bleu_scorer(reference_file, output_file):
+    #processing output
+    out_data = {}
+    out_list = []
+    with open(output_file) as json_file:
+      data = json.load(json_file)
+      for x in data:
+        out_data[x['image_id']] = x["caption"]
+        out_list.append(pre_caption(x["caption"], 40).split())
+    #print(out_list)
+    ref_data = {}
+    ref_list = []
+    with open(reference_file) as json_file:
+      data = json.load(json_file)
+      for x in data:
+        pre_capt = x["caption"]
+        captions = []
+        for cap in pre_capt:
+          captions.append(pre_caption(cap, 40).split())
+        #print(captions)
+        ref_data[x['image_id'].split("_")[0]] = captions
+        ref_list.append(captions)
+    #print(ref_list)
+    #print(out_list)
+    return corpus_bleu(ref_list, out_list)
 
 
 from pycocotools.coco import COCO
