@@ -136,7 +136,7 @@ def collect_result(result, filename, local_wdir, hdfs_wdir, write_to_hdfs=False,
                 hcopy(final_result_file, os.path.join(hdfs_wdir, '%s.json' % filename))
                 print('result file saved to %s' % os.path.join(hdfs_wdir, '%s.json' % filename))
 
-    print("BLEU score: ", bleu_scorer("data/finetune/flickr8k_test.json", os.path.join(hdfs_wdir, '%s.json' % filename)))
+    print("BLEU score: ", bleu_scorer("data/finetune/flickr8k_test.json", "output/flickr8k_captioning/result/" + filename + ".json"))
 
     dist.barrier()
 
